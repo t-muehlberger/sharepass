@@ -1,0 +1,100 @@
+openapi: '3.0.2'
+info:
+  title: SharePass - Secure password sharing utility
+  version: '1.0'
+servers:
+  - url: https://localhost:5000/api/v1
+
+components:
+  schemas:
+    CreateSecretRequest:
+      type: object
+      required:
+        - "encryptedSecret"
+        - "timeToLive"
+      properties:
+        encryptedSecret:
+          type: string
+          format: byte
+        timeToLive:
+          type: integer
+          format: int32
+        maxRetrievalCount:
+          type: integer
+          format: int32
+    SecretMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        expiryTime:
+          type: string
+          format: date-time
+        maxRetrievalCount:
+          type: integer
+          format: int32
+        retrievalCount:
+          type: integer
+          format: int32
+    Secret:
+      type: object
+      properties:
+        encryptedSecret:
+          type: string
+          format: byte
+
+paths:
+  /secrets:
+    post:
+      operationId: CreateSecret
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSecretRequest'
+      responses:
+        '201':
+          description: Secret created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretMetadata'
+  /secrets/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          description: ID of pet to fetch
+          required: true
+          schema:
+            type: string
+      operationId: GetSecretMetadata
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/SecretMetadata'
+  /secrets/{id}/reveal:
+    post:
+      parameters:
+        - name: id
+          in: path
+          description: ID of pet to fetch
+          required: true
+          schema:
+            type: string
+      operationId: RevealSecret
+      responses:
+        '200':
+          description: Secret created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Secret'
+
+
+
+    
