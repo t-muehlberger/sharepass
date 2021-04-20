@@ -1,6 +1,6 @@
 module github.com/t-muehlberger/sharepass
 
-go 1.13
+go 1.16
 
 require (
 	github.com/deepmap/oapi-codegen v1.6.1

@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/t-muehlberger/sharepass/pkg/api"
+	"github.com/t-muehlberger/sharepass/pkg/assets"
 	"github.com/t-muehlberger/sharepass/pkg/data"
 	"github.com/t-muehlberger/sharepass/pkg/secrets"
 )
@@ -29,6 +30,9 @@ func run() error {
 
 	e := echo.New()
 	e.Use(middleware.Logger())
+
+	assets.RegisterSwaggerUiHandlers(e, "/swagger")
+	api.RegisterSwaggerDocHandler(e, "/api/v1/swagger.json")
 	api.RegisterHandlersWithBaseURL(e, handler, "/api/v1")
 
 	e.Logger.Fatal(e.Start(":5000"))
