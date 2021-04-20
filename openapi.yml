@@ -74,6 +74,8 @@ paths:
             application/json:
                 schema:
                   $ref: '#/components/schemas/SecretMetadata'
+        '404':
+          description: Not Found
   /secrets/{id}/reveal:
     post:
       parameters:
@@ -91,6 +93,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Secret'
+        '404':
+          description: Not Found
 
 
 

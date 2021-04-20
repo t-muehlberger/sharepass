@@ -2,3 +2,7 @@
 
 main
 sharepass
+
+pkg/assets/web-ui
+
+__debug_bin

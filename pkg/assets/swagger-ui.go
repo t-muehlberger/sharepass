@@ -20,5 +20,8 @@ func RegisterSwaggerUiHandlers(e *echo.Echo, baseURL string) {
 		log.Fatalf("failed to setup swagger-ui: %v", err)
 	}
 
+	g.GET("", func(ctx echo.Context) error {
+		return ctx.Redirect(http.StatusMovedPermanently, baseURL+"/")
+	})
 	g.GET("*", echo.WrapHandler(http.StripPrefix(baseURL, http.FileServer(http.FS(fs)))))
 }
