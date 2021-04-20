@@ -14,10 +14,16 @@ type Handler struct {
 }
 
 func (h *Handler) RevealSecret(ctx echo.Context, id string) error {
+	s, err := h.Svc.RevealSecret(id)
+	if err != nil {
+		return err
+	}
 
-	s := Secret{}
+	sec := Secret{
+		EncryptedSecret: &s.EncryptedSecret,
+	}
 
-	return ctx.JSON(http.StatusOK, s)
+	return ctx.JSON(http.StatusOK, sec)
 }
 
 func (h *Handler) CreateSecret(ctx echo.Context) error {
@@ -27,14 +33,32 @@ func (h *Handler) CreateSecret(ctx echo.Context) error {
 		return err
 	}
 
-	sm := SecretMetadata{}
+	s, err := h.Svc.CreateSecret(cr.EncryptedSecret, cr.TimeToLive, cr.MaxRetrievalCount)
+	if err != nil {
+		return err
+	}
+
+	sm := toSecretMetadata(s)
 
 	return ctx.JSON(http.StatusCreated, sm)
 }
 
 func (h *Handler) GetSecretMetadata(ctx echo.Context, id string) error {
+	s, err := h.Svc.GetSecretMetadata(id)
+	if err != nil {
+		return err
+	}
 
-	sm := SecretMetadata{}
+	sm := toSecretMetadata(s)
 
-	return ctx.JSON(http.StatusCreated, sm)
+	return ctx.JSON(http.StatusOK, sm)
+}
+
+func toSecretMetadata(s secrets.Secret) SecretMetadata {
+	return SecretMetadata{
+		Id:                &s.Id,
+		ExpiryTime:        &s.ExpiryTime,
+		MaxRetrievalCount: &s.MaxRetrievalCount,
+		RetrievalCount:    &s.RetrievalCount,
+	}
 }

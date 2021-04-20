@@ -12,16 +12,15 @@ components:
       required:
         - "encryptedSecret"
         - "timeToLive"
+        - "maxRetrievalCount"
       properties:
         encryptedSecret:
           type: string
           format: byte
         timeToLive:
           type: integer
-          format: int32
         maxRetrievalCount:
           type: integer
-          format: int32
     SecretMetadata:
       type: object
       properties:
@@ -32,10 +31,8 @@ components:
           format: date-time
         maxRetrievalCount:
           type: integer
-          format: int32
         retrievalCount:
           type: integer
-          format: int32
     Secret:
       type: object
       properties:
