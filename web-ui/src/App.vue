@@ -1,5 +1,9 @@
 <template>
-  <router-view/>
+  <div>
+    <h1>SharePass</h1>
+    <h2>Secure password sharing</h2>
+    <router-view/>
+  </div>
 </template>
 
 <style lang="scss">

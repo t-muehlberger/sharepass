@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  sharepass:
+    image: sharepass:latest
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+      - data:/app/data
+volumes:
+  data: {}

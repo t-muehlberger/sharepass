@@ -7,6 +7,9 @@ pkg/assets/web-ui
 
 __debug_bin
 
-/data
+data
+
+web-ui/node_modules
+web-ui/dist
 
 vendor

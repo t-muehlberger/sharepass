@@ -6,7 +6,7 @@
       Secret will be available for the next <strong>{{ ttlAmount }} {{ ttlUnit }}</strong>.<br>
       It can be viewed a maximum of <strong>{{ maxRevielCount }}</strong> times.
     </p>
-    <button v-on:click="generateLink" :disabled="password === ''">Generate Link</button> <br>
+    <button v-on:click="generateLink" :disabled="password === ''">Generate Link</button> <br> <br>
     <a v-if="generatedLink !== ''" v-bind:href="generatedLink" target="_blank">{{ generatedLink }}</a>
   </div>
 </template>
@@ -39,7 +39,7 @@ export default defineComponent({
         timeToLive: this.ttlAmount * 24 * 60 * 60,
         maxRetrievalCount: this.maxRevielCount,
       })
-      this.generatedLink = 'http://localhost:8080/sec/' + resp.id + '#' + key
+      this.generatedLink = window.location.protocol + '//' + window.location.host + '/sec/' + resp.id + '#' + key
     }
   }
 })
