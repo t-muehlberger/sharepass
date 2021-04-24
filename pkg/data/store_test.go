@@ -18,7 +18,10 @@ func setupSecret(id string) secrets.Secret {
 }
 
 func setupStore() secrets.Store {
-	store := NewMemoryStore()
+	store, err := NewMemoryStore()
+	if err != nil {
+		panic(err)
+	}
 	secret := setupSecret(secretId)
 	store.Put(secret)
 	return store

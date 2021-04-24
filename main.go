@@ -22,7 +22,10 @@ func main() {
 }
 
 func run() error {
-	dataStore := data.NewMemoryStore()
+	dataStore, err := data.NewDiskStore("data")
+	if err != nil {
+		return err
+	}
 
 	secretsSvc := secrets.Service{Store: dataStore}
 
