@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import EnterSecretPage from '../views/EnterSecretPage.vue'
+import ShowSecretPage from '../views/ShowSecretPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,7 +11,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/sec/:id',
     name: "Secret",
-    component: () => import(/* webpackChunkName: "show-secret-page" */ '../views/ShowSecretPage.vue')
+    component: ShowSecretPage
   }
 ]
 

@@ -14,6 +14,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Service, OpenAPI } from '../api'
+import { Crypter } from '../crypto/crypter'
 
 export default defineComponent({
   name: 'EnterSecret',
@@ -30,8 +31,11 @@ export default defineComponent({
     async generateLink () {
       OpenAPI.BASE = '/api/v1'
 
+      const key = Crypter.randomKey()
+      const ecnrypted = Crypter.encrypt(this.password, key)
+
       const resp = await Service.createSecret({
-        encryptedSecret: btoa(this.password),
+        encryptedSecret: btoa(ecnrypted),
         timeToLive: this.ttlAmount * 24 * 60 * 60,
         maxRetrievalCount: this.maxRevielCount,
       })

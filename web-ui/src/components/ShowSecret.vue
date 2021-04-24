@@ -17,6 +17,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Service, OpenAPI } from '../api'
+import { Crypter } from '../crypto/crypter'
 
 export default defineComponent({
   name: 'ShowSecret',
@@ -46,7 +47,12 @@ export default defineComponent({
   methods: {
     async showSecret () {
       let secret = await Service.revealSecret(this.id)
-      this.secret = atob(secret.encryptedSecret ?? "")
+
+      const ciphertext = atob(secret.encryptedSecret ?? "")
+      const key = "supersecret"
+      const plaintext = Crypter.decrypt(ciphertext, key)
+
+      this.secret = plaintext
       this.revielCount++
       this.secretShown = true
     }
