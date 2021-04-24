@@ -11,7 +11,7 @@ type Service struct {
 	Store Store
 }
 
-func (s *Service) CreateSecret(encryptedSecret []byte, timeToLive int, maxRetrievalCount int) (Secret, error) {
+func (s *Service) CreateSecret(encryptedSecret string, timeToLive int, maxRetrievalCount int) (Secret, error) {
 	if timeToLive <= 0 {
 		return Secret{}, fmt.Errorf("argument error, timeToLive cannot be less than zero")
 	}

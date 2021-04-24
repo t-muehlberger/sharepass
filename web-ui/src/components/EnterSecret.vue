@@ -39,7 +39,7 @@ export default defineComponent({
         timeToLive: this.ttlAmount * 24 * 60 * 60,
         maxRetrievalCount: this.maxRevielCount,
       })
-      this.generatedLink = 'http://localhost:8080/sec/' + resp.id
+      this.generatedLink = 'http://localhost:8080/sec/' + resp.id + '#' + key
     }
   }
 })

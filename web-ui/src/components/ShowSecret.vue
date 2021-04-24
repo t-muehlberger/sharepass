@@ -8,7 +8,8 @@
       This secret will self destruct after <strong>{{ expirationDate.toLocaleDateString() }} {{ expirationDate.toLocaleTimeString() }}</strong><br>
       or after showing it <strong>{{ maxRevielCount - revielCount }}</strong> more times (<strong>{{ revielCount }}/{{ maxRevielCount }}</strong>).<br>
       <button v-on:click="showSecret" :disabled="secretShown">Show Secret</button><br>
-      <strong>{{ secret }}</strong>
+      <strong v-if="secretShown && secret !== ''">{{ secret }}</strong>
+      <strong v-if="secretShown && secret === ''">Your link appears to be broken.</strong>
     </div>
 
   </div>
@@ -25,6 +26,10 @@ export default defineComponent({
     try {
       OpenAPI.BASE = '/api/v1'
       this.id = this.$route.params.id as string
+      const hash = this.$route.hash as string
+      if (hash.startsWith('#')) {
+        this.key = hash.slice(1)
+      }
 
       let secretMetadata = await Service.getSecretMetadata(this.id)
       this.expirationDate = new Date(secretMetadata.expiryTime ?? "")
@@ -42,19 +47,24 @@ export default defineComponent({
       maxRevielCount: 0,
       revielCount: 0,
       secret: "",
+      key: "",
     }
   },
   methods: {
     async showSecret () {
-      let secret = await Service.revealSecret(this.id)
+      try {
+        let secret = await Service.revealSecret(this.id)
 
-      const ciphertext = atob(secret.encryptedSecret ?? "")
-      const key = "supersecret"
-      const plaintext = Crypter.decrypt(ciphertext, key)
+        const ciphertext = atob(secret.encryptedSecret ?? "")
+        const plaintext = Crypter.decrypt(ciphertext, this.key)
 
-      this.secret = plaintext
-      this.revielCount++
-      this.secretShown = true
+        this.secret = plaintext
+        this.revielCount++
+        this.secretShown = true
+      } catch(ex) {
+        console.error("Failed to decrypt")
+      }
+
     }
   },
 })

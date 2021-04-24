@@ -7,5 +7,5 @@ type Secret struct {
 	ExpiryTime        time.Time
 	MaxRetrievalCount int
 	RetrievalCount    int
-	EncryptedSecret   []byte
+	EncryptedSecret   string
 }
