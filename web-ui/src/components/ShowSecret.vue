@@ -18,7 +18,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Service, OpenAPI } from '../api'
-import { Crypter } from '../crypto/crypter'
+import { EncodingUrlSafe } from '../crypto/encoding-url-safe'
+import { Encryption, IEncryptedPayload } from '../crypto/encryption'
 
 export default defineComponent({
   name: 'ShowSecret',
@@ -55,8 +56,10 @@ export default defineComponent({
       try {
         let secret = await Service.revealSecret(this.id)
 
-        const ciphertext = atob(secret.encryptedSecret ?? "")
-        const plaintext = Crypter.decrypt(ciphertext, this.key)
+        const encrypted: IEncryptedPayload = JSON.parse(atob(secret.encryptedSecret ?? ""))
+        const keyBytes = EncodingUrlSafe.decode(this.key)
+        const key = await Encryption.importKey(keyBytes)
+        const plaintext = await Encryption.decrypt(encrypted, key)
 
         this.secret = plaintext
         this.revielCount++
