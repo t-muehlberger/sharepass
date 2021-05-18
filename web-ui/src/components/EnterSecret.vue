@@ -38,7 +38,8 @@ export default defineComponent({
       const ecnrypted = await Encryption.encrypt(this.password, key)
 
       const resp = await Service.createSecret({
-        encryptedSecret: btoa(JSON.stringify(ecnrypted)),
+        encryptedSecret: ecnrypted.encrypted,
+        initializationVector: ecnrypted.initializationVector,
         timeToLive: this.ttlAmount * 24 * 60 * 60,
         maxRetrievalCount: this.maxRevielCount,
       })

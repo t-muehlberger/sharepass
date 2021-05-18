@@ -20,7 +20,8 @@ func (h *Handler) RevealSecret(ctx echo.Context, id string) error {
 	}
 
 	sec := Secret{
-		EncryptedSecret: &s.EncryptedSecret,
+		EncryptedSecret:      &s.EncryptedSecret,
+		InitializationVector: &s.InitializationVector,
 	}
 
 	return ctx.JSON(http.StatusOK, sec)
@@ -33,7 +34,7 @@ func (h *Handler) CreateSecret(ctx echo.Context) error {
 		return err
 	}
 
-	s, err := h.Svc.CreateSecret(cr.EncryptedSecret, cr.TimeToLive, cr.MaxRetrievalCount)
+	s, err := h.Svc.CreateSecret(cr.EncryptedSecret, *cr.InitializationVector, cr.TimeToLive, cr.MaxRetrievalCount)
 	if err != nil {
 		return err
 	}

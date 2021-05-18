@@ -56,7 +56,10 @@ export default defineComponent({
       try {
         let secret = await Service.revealSecret(this.id)
 
-        const encrypted: IEncryptedPayload = JSON.parse(atob(secret.encryptedSecret ?? ""))
+        const encrypted: IEncryptedPayload = {
+          encrypted: secret.encryptedSecret ?? "",
+          initializationVector: secret.initializationVector ?? "",
+        }
         const keyBytes = EncodingUrlSafe.decode(this.key)
         const key = await Encryption.importKey(keyBytes)
         const plaintext = await Encryption.decrypt(encrypted, key)

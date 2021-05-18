@@ -11,7 +11,7 @@ type Service struct {
 	Store Store
 }
 
-func (s *Service) CreateSecret(encryptedSecret string, timeToLive int, maxRetrievalCount int) (Secret, error) {
+func (s *Service) CreateSecret(encryptedSecret string, initializationVector string, timeToLive int, maxRetrievalCount int) (Secret, error) {
 	if timeToLive <= 0 {
 		return Secret{}, fmt.Errorf("argument error, timeToLive cannot be less than zero")
 	}
@@ -21,11 +21,12 @@ func (s *Service) CreateSecret(encryptedSecret string, timeToLive int, maxRetrie
 
 	ttl := time.Duration(timeToLive) * time.Second
 	sec := Secret{
-		Id:                uuid.NewString(),
-		ExpiryTime:        time.Now().Add(ttl),
-		RetrievalCount:    0,
-		MaxRetrievalCount: maxRetrievalCount,
-		EncryptedSecret:   encryptedSecret,
+		Id:                   uuid.NewString(),
+		ExpiryTime:           time.Now().Add(ttl),
+		RetrievalCount:       0,
+		MaxRetrievalCount:    maxRetrievalCount,
+		EncryptedSecret:      encryptedSecret,
+		InitializationVector: initializationVector,
 	}
 
 	err := s.Store.Put(sec)
