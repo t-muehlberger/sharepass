@@ -14,7 +14,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Service, OpenAPI } from '../api'
-import { Crypter } from '../crypto/crypter'
+import { Encryption } from '../crypto/encryption'
+import { EncodingUrlSafe } from '../crypto/encoding-url-safe'
 
 export default defineComponent({
   name: 'EnterSecret',
@@ -31,15 +32,26 @@ export default defineComponent({
     async generateLink () {
       OpenAPI.BASE = '/api/v1'
 
-      const key = Crypter.randomKey()
-      const ecnrypted = Crypter.encrypt(this.password, key)
+      try {
+
+      const key = await Encryption.randomKey()
+      const ecnrypted = await Encryption.encrypt(this.password, key)
 
       const resp = await Service.createSecret({
-        encryptedSecret: btoa(ecnrypted),
+        encryptedSecret: ecnrypted.encrypted,
+        initializationVector: ecnrypted.initializationVector,
         timeToLive: this.ttlAmount * 24 * 60 * 60,
         maxRetrievalCount: this.maxRevielCount,
       })
-      this.generatedLink = window.location.protocol + '//' + window.location.host + '/sec/' + resp.id + '#' + key
+
+      const keyBytes = await Encryption.exportKey(key)
+      const keyString = EncodingUrlSafe.encode(keyBytes)
+
+      this.generatedLink = window.location.protocol + '//' + window.location.host + '/sec/' + resp.id + '#' + keyString
+
+      } catch (ex) {
+        console.log( "ex ", ex)
+      }
     }
   }
 })

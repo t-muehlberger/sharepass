@@ -16,6 +16,8 @@ components:
       properties:
         encryptedSecret:
           type: string
+        initializationVector:
+          type: string
         timeToLive:
           type: integer
         maxRetrievalCount:
@@ -37,7 +39,8 @@ components:
       properties:
         encryptedSecret:
           type: string
-
+        initializationVector:
+          type: string
 paths:
   /secrets:
     post:
