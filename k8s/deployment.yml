@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sharepass
+  labels:
+    app: sharepass
+spec:
+  selector:
+    matchLabels:
+      app: sharepass
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sharepass
+    spec:
+      containers:
+        - image: sharepass:local
+          name: sharepass
+          ports:
+            - containerPort: 80
+              name: sharepass
+          volumeMounts:
+            - name: sharepass-persistent-storage
+              mountPath: /app/data
+         # imagePullPolicy: Always
+          # Use this if you are pulling image from the vendevio registry  
+          # imagePullSecrets:
+          # - name: vd-reg
+      volumes:
+        - name: sharepass-persistent-storage
+          persistentVolumeClaim:
+            claimName: sharepass-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sharepass-pv-claim
+  labels:
+    app: sharepass
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 250Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sharepass
+  labels:
+    app: sharepass
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: sharepass
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sharepass
+  annotations:
+    cert-manager.io/issuer: letsencrypt-prod
+    cert-manager.io/issuer-kind: ClusterIssuer
+spec:
+  rules:
+  - host: sharepass.muehlberger.dev
+    http:
+      paths:
+      - backend:
+          service:
+            name: sharepass
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - sharepass.muehlberger.dev
+    secretName: sharepass-tls
+
