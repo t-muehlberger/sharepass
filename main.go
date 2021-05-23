@@ -22,7 +22,7 @@ func main() {
 }
 
 func run() error {
-	dataStore, err := data.NewDiskStore("data")
+	dataStore, err := getStore()
 	if err != nil {
 		return err
 	}
@@ -42,4 +42,27 @@ func run() error {
 	e.Logger.Fatal(e.Start(":5000"))
 
 	return nil
+}
+
+func getStore() (secrets.Store, error) {
+	pgHost, usePostgres := os.LookupEnv("PG_HOST")
+
+	if !usePostgres {
+		return data.NewDiskStore("data")
+	}
+
+	pgDb, ok := os.LookupEnv("PG_DB")
+	if !ok {
+		pgDb = "postgres"
+	}
+	pgUser, ok := os.LookupEnv("PG_USER")
+	if !ok {
+		pgUser = "postgres"
+	}
+	pgPwd, ok := os.LookupEnv("PG_PWD")
+	if !ok {
+		pgPwd = "postgres"
+	}
+
+	return data.NewPostgresStore(pgHost, pgUser, pgPwd, pgDb)
 }
