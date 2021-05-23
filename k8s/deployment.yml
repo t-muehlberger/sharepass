@@ -19,32 +19,12 @@ spec:
         - image: sharepass:local
           name: sharepass
           ports:
-            - containerPort: 80
+            - containerPort: 5000
               name: sharepass
-          volumeMounts:
-            - name: sharepass-persistent-storage
-              mountPath: /app/data
-         # imagePullPolicy: Always
-          # Use this if you are pulling image from the vendevio registry  
-          # imagePullSecrets:
-          # - name: vd-reg
-      volumes:
-        - name: sharepass-persistent-storage
-          persistentVolumeClaim:
-            claimName: sharepass-pv-claim
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: sharepass-pv-claim
-  labels:
-    app: sharepass
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 250Mi
+          env:
+            - name: PG_HOST
+              value: postgres
+          imagePullPolicy: Always
 ---
 apiVersion: v1
 kind: Service
@@ -80,8 +60,79 @@ spec:
               number: 80
         path: /
         pathType: Prefix
+  - host: sharepass-local.muehlberger.dev
+    http:
+      paths:
+      - backend:
+          service:
+            name: sharepass
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
   tls:
   - hosts:
     - sharepass.muehlberger.dev
+    - sharepass-local.muehlberger.dev
     secretName: sharepass-tls
-
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - image: postgres:13.2
+          name: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: postgres-persistent-storage
+              mountPath: /var/lib/postgresql
+          imagePullPolicy: Always
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 250Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: postgres
+  type: ClusterIP

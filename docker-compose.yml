@@ -1,12 +1,23 @@
 version: "3.7"
 services:
   sharepass:
-    image: sharepass:latest
+    image: tmuehlberger/sharepass:alpha
     build: .
     ports:
       - "5000:5000"
     volumes:
       - .:/code
       - data:/app/data
+    environment: 
+      PG_HOST: postgres
+      PG_DB: postgres
+      PG_USER: postgres
+      PG_PWD: postgres
+  postgres:
+    image: postgres:13.3
+    ports: 
+      - "127.0.0.1:55432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
 volumes:
   data: {}
