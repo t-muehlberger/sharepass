@@ -14,4 +14,4 @@ web-ui/dist
 
 vendor
 
-*.pem
+**/*.pem
