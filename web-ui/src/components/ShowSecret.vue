@@ -7,7 +7,7 @@
     <div v-if="dataLoaded">
       This secret will self destruct after <strong>{{ expirationDate.toLocaleDateString() }} {{ expirationDate.toLocaleTimeString() }}</strong><br>
       or after showing it <strong>{{ maxRevielCount - revielCount }}</strong> more times (<strong>{{ revielCount }}/{{ maxRevielCount }}</strong>).<br> <br>
-      <button v-on:click="showSecret" :disabled="secretShown">Show Secret</button><br> <br>
+      <Button v-on:click="showSecret" :disabled="secretShown">Show Secret</Button><br> <br>
       <strong v-if="secretShown && secret !== ''">{{ secret }}</strong>
       <strong v-if="secretShown && secret === ''">Your link appears to be broken.</strong>
     </div>

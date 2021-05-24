@@ -1,30 +1,32 @@
 <template>
   <div>
-    <h1>SharePass</h1>
-    <h2>Secure password sharing</h2>
+    <Menubar :model="items">
+      <template #start>
+        <strong>Sharepass</strong>
+        <span> - Secure password sharing</span>
+      </template>
+    </Menubar>
     <router-view/>
   </div>
 </template>
+<script lang="ts">
+import { defineComponent } from "@vue/runtime-core"
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+export default defineComponent({
+  name: 'EnterSecret',
+  data () {
+    return {
+      items: [
+        {
+          label: 'Sharepass',
+          visible: false
+        },
+      ]
     }
+  },
+  methods: {
   }
-}
+})
+</script>
+<style lang="scss">
 </style>
