@@ -1,5 +1,5 @@
 <template>
-  <div> 
+  <div class="p-fluid">  
     <div v-if="!dataLoaded">
       Access to the secret expired!<br>
       <a href="/">Enter a new secret</a>
@@ -8,10 +8,18 @@
       This secret will self destruct after <strong>{{ expirationDate.toLocaleDateString() }} {{ expirationDate.toLocaleTimeString() }}</strong><br>
       or after showing it <strong>{{ maxRevielCount - revielCount }}</strong> more times (<strong>{{ revielCount }}/{{ maxRevielCount }}</strong>).<br> <br>
       <Button v-on:click="showSecret" :disabled="secretShown">Show Secret</Button><br> <br>
-      <strong v-if="secretShown && secret !== ''">{{ secret }}</strong>
       <strong v-if="secretShown && secret === ''">Your link appears to be broken.</strong>
-    </div>
 
+      <span class="p-inputgroup">
+        <InputText type="text" v-model="secret" disabled/>
+        <span class="p-inputgroup-addon" v-on:click="copySecret()">
+          <i class="pi pi-copy"></i>
+        </span>
+      </span>
+    </div>
+    <div v-if="copied" class="p-pt-3">
+      <InlineMessage severity="success" >Copied to clipboard</InlineMessage>
+    </div>
   </div>
 </template>
 
@@ -20,6 +28,7 @@ import { defineComponent } from 'vue'
 import { Service, OpenAPI } from '../api'
 import { EncodingUrlSafe } from '../crypto/encoding-url-safe'
 import { Encryption, IEncryptedPayload } from '../crypto/encryption'
+import copy from 'copy-to-clipboard'
 
 export default defineComponent({
   name: 'ShowSecret',
@@ -49,6 +58,7 @@ export default defineComponent({
       revielCount: 0,
       secret: "",
       key: "",
+      copied: false,
     }
   },
   methods: {
@@ -70,7 +80,12 @@ export default defineComponent({
       } catch(ex) {
         console.error("Failed to decrypt")
       }
-
+    },
+    copySecret() {
+      if (this.secret && this.secret !== '') {
+        this.copied = copy(this.secret)
+        console.log("Copy success ", this.copied)
+      }
     }
   },
 })

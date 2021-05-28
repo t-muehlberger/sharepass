@@ -1,13 +1,19 @@
 <template>
-  <div>
-    <Menubar :model="items">
-      <template #start>
-        <strong>Sharepass</strong>
-        <span> - Secure password sharing</span>
+<div class="p-grid p-jc-center p-p-3">
+  <div class="p-col-12 p-md-5 p-lg-5 p-xl-4">
+    <Card>
+      <template #title>
+        Sharepass
       </template>
-    </Menubar>
-    <router-view/>
+      <template #subtitle>
+        Secure password sharing
+      </template>
+      <template #content>
+        <router-view/>
+      </template>
+    </Card>
   </div>
+</div>
 </template>
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core"

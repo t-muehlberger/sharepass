@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div>
     <div class="p-fluid">
       <div class="p-field">
         <span class="p-float-label">
@@ -15,10 +15,13 @@
 
       <span class="p-inputgroup" v-if="generatedLink !== ''">
         <InputText type="text" v-model="generatedLink" disabled/>
-        <span class="p-inputgroup-addon">
+        <span class="p-inputgroup-addon" v-on:click="copyLink">
           <i class="pi pi-copy"></i>
         </span>
       </span>
+      <div v-if="copied" class="p-pt-3">
+        <InlineMessage severity="success" >Copied to clipboard</InlineMessage>
+      </div>
     </div>
   </div>
 </template>
@@ -28,6 +31,7 @@ import { defineComponent } from 'vue'
 import { Service, OpenAPI } from '../api'
 import { Encryption } from '../crypto/encryption'
 import { EncodingUrlSafe } from '../crypto/encoding-url-safe'
+import copy from 'copy-to-clipboard'
 
 export default defineComponent({
   name: 'EnterSecret',
@@ -37,7 +41,8 @@ export default defineComponent({
       ttlAmount: 7,
       ttlUnit: 'Days',
       maxRevielCount: 3,
-      generatedLink: ''
+      generatedLink: '',
+      copied: false,
     }
   },
   methods: {
@@ -63,6 +68,12 @@ export default defineComponent({
 
       } catch (ex) {
         console.log( "ex ", ex)
+      }
+    },
+    copyLink() {
+      if (this.generatedLink && this.generatedLink !== '') {
+        this.copied = copy(this.generatedLink)
+        console.log("copy success: ", this.copied)
       }
     }
   }
