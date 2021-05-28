@@ -1,13 +1,28 @@
 <template>
-  <div class="">
-    <label for="in-pwd">Enter Secret</label><br>
-    <input v-model="password" placeholder="Secret" type="password" id="input-pwd" name="input-pwd">
-    <p>
-      Secret will be available for the next <strong>{{ ttlAmount }} {{ ttlUnit }}</strong>.<br>
-      It can be viewed a maximum of <strong>{{ maxRevielCount }}</strong> times.
-    </p>
-    <button v-on:click="generateLink" :disabled="password === ''">Generate Link</button> <br> <br>
-    <a v-if="generatedLink !== ''" v-bind:href="generatedLink" target="_blank">{{ generatedLink }}</a>
+  <div>
+    <div class="p-fluid">
+      <div class="p-field">
+        <span class="p-float-label">
+          <Password v-model="password" id="password" toggleMask :feedback="false"></Password>
+          <label for="password">Enter Secret</label>
+        </span>
+      </div>
+      <p>
+        Secret will be available for the next <strong>{{ ttlAmount }} {{ ttlUnit }}</strong>.<br>
+        It can be viewed a maximum of <strong>{{ maxRevielCount }}</strong> times.
+      </p>
+      <Button v-on:click="generateLink" :disabled="password === ''">Generate Link</Button> <br> <br>
+
+      <span class="p-inputgroup" v-if="generatedLink !== ''">
+        <InputText type="text" v-model="generatedLink" disabled/>
+        <span class="p-inputgroup-addon" v-on:click="copyLink">
+          <i class="pi pi-copy"></i>
+        </span>
+      </span>
+      <div v-if="copied" class="p-pt-3">
+        <InlineMessage severity="success" >Copied to clipboard</InlineMessage>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -16,6 +31,7 @@ import { defineComponent } from 'vue'
 import { Service, OpenAPI } from '../api'
 import { Encryption } from '../crypto/encryption'
 import { EncodingUrlSafe } from '../crypto/encoding-url-safe'
+import copy from 'copy-to-clipboard'
 
 export default defineComponent({
   name: 'EnterSecret',
@@ -25,7 +41,8 @@ export default defineComponent({
       ttlAmount: 7,
       ttlUnit: 'Days',
       maxRevielCount: 3,
-      generatedLink: ''
+      generatedLink: '',
+      copied: false,
     }
   },
   methods: {
@@ -51,6 +68,12 @@ export default defineComponent({
 
       } catch (ex) {
         console.log( "ex ", ex)
+      }
+    },
+    copyLink() {
+      if (this.generatedLink && this.generatedLink !== '') {
+        this.copied = copy(this.generatedLink)
+        console.log("copy success: ", this.copied)
       }
     }
   }
