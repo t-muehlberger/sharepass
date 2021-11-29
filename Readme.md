@@ -1,6 +1,8 @@
 # SharePass - Secure password sharing utility
 
-
+A | B
+- | - 
+![Screenhot enter secret](doc/img/screenshot-enter-secret.png)|![Screenhot show secret](doc/img/screenshot-show-secret.png)
 
 **Features:**
 
