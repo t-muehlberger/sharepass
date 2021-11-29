@@ -1,5 +1,17 @@
 # SharePass - Secure password sharing utility
 
+
+
+**Features:**
+
+- End to end encryption
+- Link expires after 7 days
+- Link expires showing 3 times
+
+**Demo:**
+
+https://sharepass.muehlberger.dev
+
 ## Building
 
 **Prerequisites:**
