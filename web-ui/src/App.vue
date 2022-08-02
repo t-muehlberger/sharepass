@@ -6,7 +6,7 @@
         Sharepass
       </template>
       <template #subtitle>
-        Secure password sharing
+        Secure Password Sharing Utility
       </template>
       <template #content>
         <router-view/>
@@ -35,4 +35,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
+.p-card-content {
+  //padding: 0 !important; 
+}
 </style>

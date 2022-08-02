@@ -56,10 +56,22 @@ func (h *Handler) GetSecretMetadata(ctx echo.Context, id string) error {
 }
 
 func toSecretMetadata(s secrets.Secret) SecretMetadata {
+	maxRetrievalCount := &s.MaxRetrievalCount
+	retrievalCount := &s.RetrievalCount
+	if s.AllowUnlimitedRetrieval {
+		maxRetrievalCount = nil
+		retrievalCount = nil
+	}
+
+	expiryTime := &s.ExpiryTime
+	if s.DisableExpiryTime {
+		expiryTime = nil
+	}
+
 	return SecretMetadata{
 		Id:                &s.Id,
-		ExpiryTime:        &s.ExpiryTime,
-		MaxRetrievalCount: &s.MaxRetrievalCount,
-		RetrievalCount:    &s.RetrievalCount,
+		ExpiryTime:        expiryTime,
+		MaxRetrievalCount: maxRetrievalCount,
+		RetrievalCount:    retrievalCount,
 	}
 }

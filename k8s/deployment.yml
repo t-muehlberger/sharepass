@@ -16,14 +16,14 @@ spec:
         app: sharepass
     spec:
       containers:
-        - image: sharepass:local
+        - image: tmuehlberger/sharepass:latest
           name: sharepass
           ports:
             - containerPort: 5000
               name: sharepass
           env:
             - name: PG_HOST
-              value: postgres
+              value: postgres:5432
           imagePullPolicy: Always
 ---
 apiVersion: v1
@@ -46,8 +46,8 @@ kind: Ingress
 metadata:
   name: sharepass
   annotations:
-    cert-manager.io/issuer: letsencrypt-prod
-    cert-manager.io/issuer-kind: ClusterIssuer
+    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
 spec:
   rules:
   - host: sharepass.muehlberger.dev
@@ -60,21 +60,10 @@ spec:
               number: 80
         path: /
         pathType: Prefix
-  - host: sharepass-local.muehlberger.dev
-    http:
-      paths:
-      - backend:
-          service:
-            name: sharepass
-            port:
-              number: 80
-        path: /
-        pathType: Prefix
   tls:
   - hosts:
     - sharepass.muehlberger.dev
-    - sharepass-local.muehlberger.dev
-    secretName: sharepass-tls
+    secretName: tls-sharepass
 ---
 apiVersion: apps/v1
 kind: Deployment

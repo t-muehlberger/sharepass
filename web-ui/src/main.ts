@@ -9,6 +9,7 @@ import Password from 'primevue/password';
 import InputText from 'primevue/inputtext';
 import Card from 'primevue/card';
 import InlineMessage from 'primevue/inlinemessage';
+import Dropdown from 'primevue/dropdown';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -25,4 +26,5 @@ createApp(App)
     .component('InputText', InputText)
     .component('Card', Card)
     .component('InlineMessage', InlineMessage)
+    .component('Dropdown', Dropdown)
     .mount('#app')

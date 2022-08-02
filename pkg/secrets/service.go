@@ -12,21 +12,27 @@ type Service struct {
 }
 
 func (s *Service) CreateSecret(encryptedSecret string, initializationVector string, timeToLive int, maxRetrievalCount int) (Secret, error) {
-	if timeToLive <= 0 {
-		return Secret{}, fmt.Errorf("argument error, timeToLive cannot be less than zero")
-	}
-	if maxRetrievalCount < 0 {
-		return Secret{}, fmt.Errorf("argument error, maxRetrievalCount cannot be less than zero")
+	ttl := time.Duration(timeToLive) * time.Second
+	expiryTime := time.Now().Add(ttl)
+
+	if timeToLive < -1 {
+		return Secret{}, fmt.Errorf("argument error, timeToLive is invalid")
 	}
 
-	ttl := time.Duration(timeToLive) * time.Second
+	if maxRetrievalCount < -1 {
+		return Secret{}, fmt.Errorf("argument error, maxRetrievalCount is invalid")
+	}
+
 	sec := Secret{
-		Id:                   uuid.NewString(),
-		ExpiryTime:           time.Now().Add(ttl),
-		RetrievalCount:       0,
-		MaxRetrievalCount:    maxRetrievalCount,
-		EncryptedSecret:      encryptedSecret,
-		InitializationVector: initializationVector,
+		Id:                      uuid.NewString(),
+		DisableExpiryTime:       timeToLive == -1,
+		ExpiryTime:              expiryTime,
+		AllowUnlimitedRetrieval: maxRetrievalCount == -1,
+		RetrievalCount:          0,
+		MaxRetrievalCount:       maxRetrievalCount,
+		EncryptedSecret:         encryptedSecret,
+		InitializationVector:    initializationVector,
+		CreatedAt:               time.Now(),
 	}
 
 	err := s.Store.Put(sec)
@@ -76,7 +82,7 @@ func (s *Service) RevealSecret(id string) (Secret, error) {
 }
 
 func isExpired(s Secret) bool {
-	timeout := !s.ExpiryTime.After(time.Now())
-	retievalCount := s.RetrievalCount >= s.MaxRetrievalCount
+	timeout := !s.ExpiryTime.After(time.Now()) && !s.DisableExpiryTime
+	retievalCount := s.RetrievalCount >= s.MaxRetrievalCount && !s.AllowUnlimitedRetrieval
 	return timeout || retievalCount
 }

@@ -1,12 +1,16 @@
 <template>
   <div class="p-fluid">  
     <div v-if="!dataLoaded">
-      Access to the secret expired!<br>
+      Access to the secret expired!
+      <br>
+      <br>
       <a href="/">Enter a new secret</a>
     </div>
     <div v-if="dataLoaded">
-      This secret will self destruct after <strong>{{ expirationDate.toLocaleDateString() }} {{ expirationDate.toLocaleTimeString() }}</strong><br>
-      or after showing it <strong>{{ maxRevielCount - revielCount }}</strong> more times (<strong>{{ revielCount }}/{{ maxRevielCount }}</strong>).<br> <br>
+      <div v-if="!expirationDisabled"> This secret will self destruct after <strong>{{ expirationDate.toLocaleDateString() }} {{ expirationDate.toLocaleTimeString() }}</strong><br></div>
+      <div v-if="!expirationDisabled && !allowUnlimitedReviel">or after showing it <strong>{{ (maxRevielCount || 0) - (revielCount || 0) }}</strong> more times (<strong>{{ revielCount }}/{{ maxRevielCount }}</strong>).</div> 
+      <div v-if="expirationDisabled && !allowUnlimitedReviel">This secret will self destruct after showing it <strong>{{ (maxRevielCount || 0) - (revielCount || 0) }}</strong> more times (<strong>{{ revielCount }}/{{ maxRevielCount }}</strong>).</div>
+      <br>
       <Button v-on:click="showSecret" :disabled="secretShown">Show Secret</Button><br> <br>
       <strong v-if="secretShown && secret === ''">Your link appears to be broken.</strong>
 
@@ -43,8 +47,10 @@ export default defineComponent({
 
       let secretMetadata = await Service.getSecretMetadata(this.id)
       this.expirationDate = new Date(secretMetadata.expiryTime ?? "")
-      this.maxRevielCount = secretMetadata.maxRetrievalCount ?? 0
-      this.revielCount = secretMetadata.retrievalCount ?? 0
+      this.allowUnlimitedReviel = secretMetadata.maxRetrievalCount === undefined || secretMetadata.maxRetrievalCount === null
+      this.expirationDisabled = secretMetadata.expiryTime === undefined || secretMetadata.expiryTime === undefined
+      this.maxRevielCount = secretMetadata.maxRetrievalCount || 0
+      this.revielCount = secretMetadata.retrievalCount || 0
       this.dataLoaded = true
     } catch { }
   },
@@ -53,9 +59,11 @@ export default defineComponent({
       id: "",
       dataLoaded: false,
       secretShown: false,
+      expirationDisabled: false,
       expirationDate: new Date(),
-      maxRevielCount: 0,
-      revielCount: 0,
+      allowUnlimitedReviel: false,
+      maxRevielCount: 0 as number,
+      revielCount: 0 as number,
       secret: "",
       key: "",
       copied: false,
@@ -75,7 +83,9 @@ export default defineComponent({
         const plaintext = await Encryption.decrypt(encrypted, key)
 
         this.secret = plaintext
-        this.revielCount++
+        if (typeof(this.revielCount) === "number") {
+          this.revielCount++
+        }
         this.secretShown = true
       } catch(ex) {
         console.error("Failed to decrypt")

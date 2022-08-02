@@ -49,7 +49,7 @@ Enter Secret | Show Secret
 
 **SSL Dev Cert:**
 
-- Set up [mkcert](https://github.com/FiloSottile/mkcert)
+Set up [mkcert](https://github.com/FiloSottile/mkcert) 
 
     cd web-ui
     mkcert localhost

@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   sharepass:
-    image: tmuehlberger/sharepass:alpha
+    image: tmuehlberger/sharepass:latest
     build: .
     ports:
       - "5000:5000"
