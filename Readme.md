@@ -32,7 +32,7 @@ Enter Secret | Show Secret
 
 **Prerequisites:**
 
-- Go 1.16+
+- Go 1.23+
 - Node.js 14+
 - NPM
 
@@ -43,7 +43,6 @@ Enter Secret | Show Secret
     npm run build
 
     cd ..
-    go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.6.1
     go generate
     go build
 

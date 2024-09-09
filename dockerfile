@@ -26,8 +26,6 @@ COPY . .
 
 COPY --from=js-builder /app/web-ui/dist pkg/assets/web-ui
 
-RUN go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.6.1
-
 RUN go generate
 
 RUN go build -o sharepass *.go
