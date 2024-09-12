@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -38,6 +39,12 @@ func run() error {
 	api.RegisterSwaggerDocHandler(e, "/api/v1/swagger.json")
 	api.RegisterHandlersWithBaseURL(e, handler, "/api/v1")
 	assets.RegisterWebUiHandlers(e)
+
+	metricsPass, metricsEnable := os.LookupEnv("METRICS_PASS")
+	if metricsEnable {
+		api.RegisterMetricsHandler(e, metricsPass)
+		api.CollectCountBackground(dataStore, context.Background())
+	}
 
 	e.Logger.Fatal(e.Start(":5000"))
 

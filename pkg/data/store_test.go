@@ -97,3 +97,15 @@ func TestIncrementRetreivalCount(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestStoreCount(t *testing.T) {
+	var store = setupStore()
+
+	cnt, err := store.Count()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cnt != 1 {
+		t.Fail()
+	}
+}
