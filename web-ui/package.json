@@ -20,7 +20,7 @@
     "primeicons": "^4.1.0",
     "primevue": "^3.5.0",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0-0"
+    "vue-router": "~4.0.0-0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",

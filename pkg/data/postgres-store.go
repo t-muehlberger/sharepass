@@ -68,6 +68,14 @@ func (s *postgresStore) Close() error {
 	return s.db.Close()
 }
 
+func (s *postgresStore) Count() (int, error) {
+	count, err := s.db.Model((*secrets.Secret)(nil)).Count()
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // createSchema creates database schema for User and Story models.
 func createPgSchema(db *pg.DB) error {
 	models := []interface{}{

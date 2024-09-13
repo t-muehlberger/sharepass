@@ -13,5 +13,6 @@ type Store interface {
 	Get(id string) (Secret, error)
 	IncrementRetreivalCount(id string) (Secret, error)
 	Delete(id string) error
+	Count() (int, error)
 	Close() error
 }

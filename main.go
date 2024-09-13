@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -12,7 +13,7 @@ import (
 	"github.com/t-muehlberger/sharepass/pkg/secrets"
 )
 
-//go:generate oapi-codegen --generate server,types,spec -o pkg/api/api.gen.go --package api openapi.yml
+//go:generate go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen --generate server,types,spec -o pkg/api/api.gen.go --package api openapi.yml
 
 func main() {
 	if err := run(); err != nil {
@@ -38,6 +39,12 @@ func run() error {
 	api.RegisterSwaggerDocHandler(e, "/api/v1/swagger.json")
 	api.RegisterHandlersWithBaseURL(e, handler, "/api/v1")
 	assets.RegisterWebUiHandlers(e)
+
+	metricsPass, metricsEnable := os.LookupEnv("METRICS_PASS")
+	if metricsEnable {
+		api.RegisterMetricsHandler(e, metricsPass)
+		api.CollectCountBackground(dataStore, context.Background())
+	}
 
 	e.Logger.Fatal(e.Start(":5000"))
 

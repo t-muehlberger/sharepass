@@ -5,10 +5,12 @@ sharepass
 
 pkg/assets/web-ui
 
-__debug_bin
+__debug_bin*
 
 /data
 
 vendor
 
 *.pem
+
+.env

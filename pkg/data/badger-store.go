@@ -80,7 +80,11 @@ func (b *badgerStore) Delete(id string) error {
 		return txn.Delete(key)
 	})
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (b *badgerStore) IncrementRetreivalCount(id string) (secrets.Secret, error) {
@@ -110,6 +114,24 @@ func (b *badgerStore) IncrementRetreivalCount(id string) (secrets.Secret, error)
 	})
 
 	return s, err
+}
+
+func (b *badgerStore) Count() (int, error) {
+	var count int
+	err := b.db.View(func(txn *badger.Txn) error {
+		// iterator is the only way to count in badger
+		iter := txn.NewIterator(badger.IteratorOptions{})
+		defer iter.Close()
+		for iter.Rewind(); iter.Valid(); iter.Next() { // https://dgraph.io/docs/badger/get-started/#iterating-over-keys
+			count++
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 func (b *badgerStore) Close() error {

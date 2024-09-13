@@ -12,31 +12,33 @@ RUN npm run build
 
 #####
 
-FROM golang:1.16-alpine as go-builder
+FROM golang:1.23-alpine as go-builder
+
+ARG TARGETPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
 
 WORKDIR /app
 
-ENV CGO_ENABLED 0 
-
-COPY go.* ./
-
+COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 
 COPY --from=js-builder /app/web-ui/dist pkg/assets/web-ui
 
-RUN go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.6.1
-
-RUN go generate
-
-RUN go build -o sharepass *.go
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    go generate && \
+    CGO_ENABLED=0 \
+    GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+    go build -o sharepass -ldflags "-w -s" *.go
 
 #####
 
-FROM alpine:3.13
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:latest
 
 RUN apk --update add ca-certificates && \
+    update-ca-certificates && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
