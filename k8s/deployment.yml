@@ -16,7 +16,7 @@ spec:
         app: sharepass
     spec:
       containers:
-        - image: tmuehlberger/sharepass:latest
+        - image: ghcr.io/t-muehlberger/sharepass:latest
           name: sharepass
           ports:
             - containerPort: 5000
