@@ -1,7 +1,6 @@
-version: "3.7"
 services:
   sharepass:
-    image: tmuehlberger/sharepass:latest
+    image: ghcr.io/t-muehlberger/sharepass:latest
     build: .
     ports:
       - "5000:5000"
@@ -9,15 +8,19 @@ services:
       - .:/code
       - data:/app/data
     environment: 
-      PG_HOST: postgres
+      PG_HOST: postgres:5432
       PG_DB: postgres
       PG_USER: postgres
       PG_PWD: postgres
+    depends_on:
+      - postgres
+    restart: unless-stopped
   postgres:
     image: postgres:16
     ports: 
       - "127.0.0.1:55432:5432"
     environment:
       POSTGRES_PASSWORD: postgres
+    restart: unless-stopped
 volumes:
   data: {}
